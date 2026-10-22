@@ -1,0 +1,21 @@
+# secrets: never commit
+.env
+.env.*
+*.pem
+*.key
+*.crx
+credentials*.json
+
+# local tool settings
+.claude/
+.superpowers/
+.impeccable/
+.vscode/
+
+# build output, captures
+node_modules/
+dist/
+brag-output*/
+
+.DS_Store
+Thumbs.db

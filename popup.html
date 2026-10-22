@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Redlines</title>
+  <link rel="stylesheet" href="theme.css" />
+  <script src="prefs.js"></script>
+  <script src="theme.js"></script>
+  <style>
+    body { width: 300px; }
+    .head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px; border-bottom: 1px solid var(--dn-border); }
+    .head h1 { margin: 0; font-size: var(--dn-text-lg); line-height: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .head .ver { margin-left: auto; padding: 0 6px; border: 1px solid var(--dn-border); border-radius: var(--dn-radius-xs); font-size: var(--dn-text-xs); line-height: 16px; color: var(--dn-text-tertiary); }
+    .head .title { min-width: 0; }
+    .head .tagline { margin-top: 1px; font-size: var(--dn-text-sm); line-height: 16px; color: var(--dn-text-tertiary); }
+
+    .count-block { padding: 14px 16px 16px; }
+    .count {
+      font-size: var(--dn-text-3xl);
+      line-height: var(--dn-leading-3xl);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      color: var(--dn-text);
+    }
+    .count-label {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--dn-border);
+      font-size: var(--dn-text-xs);
+      line-height: 1.5;
+      letter-spacing: var(--dn-tracking-label);
+      text-transform: uppercase;
+      color: var(--dn-text-secondary);
+    }
+    .count-label.long { font-family: var(--dn-font-body); font-size: var(--dn-text-base); letter-spacing: 0; text-transform: none; }
+
+    .actions { padding: 0 8px 8px; }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      height: 38px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      border-radius: var(--dn-radius-md);
+      background: transparent;
+      color: var(--dn-text);
+      font-family: var(--dn-font-ui);
+      font-size: var(--dn-text-base);
+      text-align: left;
+      cursor: pointer;
+      transition: background var(--dn-duration-fast) ease, color var(--dn-duration-fast) ease, box-shadow var(--dn-duration-fast) ease;
+    }
+    .row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--dn-text-secondary); }
+    .row kbd { margin-left: auto; }
+    .row:hover { background: var(--dn-hover); }
+    .row:hover svg { color: var(--dn-accent-text); }
+    .row:disabled { opacity: 0.45; cursor: default; background: transparent; }
+    .row.primary { margin-bottom: 4px; background: var(--dn-accent); border-color: var(--dn-accent); color: var(--dn-accent-contrast); font-weight: 700; }
+    .row.primary svg, .row.primary kbd { color: var(--dn-accent-contrast); border-color: color-mix(in srgb, var(--dn-accent-contrast) 35%, transparent); }
+    .row.primary:hover { background: var(--dn-accent-hover); box-shadow: var(--dn-accent-glow); }
+    .row.primary:disabled { background: var(--dn-bg-tertiary); border-color: var(--dn-border); color: var(--dn-text-secondary); box-shadow: none; }
+    .row.primary:disabled svg, .row.primary:disabled kbd { color: var(--dn-text-tertiary); }
+
+    /* AI agents connected through the MCP bridge. Details show on hover / keyboard focus, above the strip. */
+    .agents { position: relative; padding: 10px 16px 14px; border-top: 1px solid var(--dn-border); }
+    .agents-head { display: flex; align-items: center; gap: 8px; }
+    .agents-count { margin-left: auto; font-size: var(--dn-text-xs); line-height: var(--dn-leading-xs); color: var(--dn-text-secondary); font-variant-numeric: tabular-nums; }
+    .agents-count.on { color: var(--dn-success); }
+    .agents-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .agents-list:empty { display: none; }
+    .agents-note { margin: 6px 0 0; font-family: var(--dn-font-body); font-size: var(--dn-text-sm); line-height: 1.5; color: var(--dn-text-secondary); }
+    .agents-note.error { color: var(--dn-error); }
+    .help { display: flex; gap: 16px; padding: 10px 16px 12px; border-top: 1px solid var(--dn-border); font-family: var(--dn-font-body); font-size: var(--dn-text-sm); }
+    .help a { color: var(--dn-text-secondary); text-underline-offset: 2px; }
+    .help a:hover, .help a:focus-visible { color: var(--dn-accent-text); }
+    .agents-note button { padding: 0; border: 0; background: none; font: inherit; color: var(--dn-accent-text); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+    .agent {
+      display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px 0 7px;
+      border: 1px solid var(--dn-border); border-radius: var(--dn-radius-full); background: var(--dn-bg-secondary);
+      color: var(--dn-text); font-family: var(--dn-font-ui); font-size: var(--dn-text-sm); cursor: default;
+      transition: border-color var(--dn-duration-fast) ease, background var(--dn-duration-fast) ease;
+    }
+    .agent:hover, .agent:focus-visible { border-color: var(--dn-border-strong); background: var(--dn-hover); }
+    .agent .multi { color: var(--dn-text-tertiary); font-variant-numeric: tabular-nums; }
+    .agent-ico {
+      flex-shrink: 0; width: 15px; height: 15px; background: var(--agent-color, currentColor);
+      -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
+    }
+    .dot { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--dn-success); box-shadow: 0 0 0 3px var(--dn-success-ring); }
+    /* Working = a request is in flight (or just finished): the logo blinks, the dot turns accent */
+    .agent.busy { border-color: var(--dn-accent); }
+    .agent.busy .agent-ico { animation: rl-agent-blink 0.8s ease-in-out infinite; }
+    .busy .dot, .dot.busy { background: var(--dn-accent); box-shadow: 0 0 0 3px var(--dn-accent-ring); animation: rl-agent-blink 0.8s ease-in-out infinite; }
+    @keyframes rl-agent-blink { 50% { opacity: 0.3; } }
+
+    .agent-card {
+      display: none; position: absolute; left: 8px; right: 8px; bottom: calc(100% - 4px); z-index: 2;
+      padding: 12px; border: 1px solid var(--dn-border-strong); border-radius: var(--dn-radius-lg);
+      background: var(--dn-bg-secondary); box-shadow: var(--dn-shadow-lg);
+      font-family: var(--dn-font-body); font-size: var(--dn-text-sm); line-height: 1.45; color: var(--dn-text);
+    }
+    .agent-wrap:hover .agent-card, .agent:focus-visible + .agent-card { display: block; }
+    .card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--dn-font-ui); font-size: var(--dn-text-base); font-weight: 700; }
+    .card-head .agent-ico { width: 18px; height: 18px; }
+    .card-state { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; font-size: var(--dn-text-xs); font-weight: 400; color: var(--dn-success); }
+    .card-state.busy { color: var(--dn-accent-text); }
+    .card-stats { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; }
+    .card-stats dt { color: var(--dn-text-tertiary); }
+    .card-stats dd { margin: 0; font-variant-numeric: tabular-nums; }
+    .card-recent { margin: 10px 0 0; padding: 8px 0 0; border-top: 1px solid var(--dn-border-subtle); list-style: none; }
+    .card-recent li { display: flex; gap: 8px; padding: 2px 0; }
+    .card-recent .what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card-recent time { flex-shrink: 0; margin-left: auto; color: var(--dn-text-tertiary); font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <span class="rl-mark-slot" aria-hidden="true"></span>
+    <div class="title"><h1 class="rl-cursor">Redlines</h1><div class="tagline">See. Mark. Explain. Ship.</div></div>
+    <span class="ver" id="ver"></span>
+  </div>
+
+  <div class="count-block">
+    <div class="count" id="count">–</div>
+    <div class="count-label">Annotations on this page</div>
+  </div>
+
+  <div class="actions">
+    <button class="row primary" id="open-sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5H15.5M8.5 9.5H12"/><path d="M14.1706 20.8905C18.3536 20.6125 21.6856 17.2332 21.9598 12.9909C22.0134 12.1607 22.0134 11.3009 21.9598 10.4707C21.6856 6.22838 18.3536 2.84913 14.1706 2.57107C12.7435 2.47621 11.2536 2.47641 9.8294 2.57107C5.64639 2.84913 2.31441 6.22838 2.04024 10.4707C1.98659 11.3009 1.98659 12.1607 2.04024 12.9909C2.1401 14.536 2.82343 15.9666 3.62791 17.1746C4.09501 18.0203 3.78674 19.0758 3.30021 19.9978C2.94941 20.6626 2.77401 20.995 2.91484 21.2351C3.05568 21.4752 3.37026 21.4829 3.99943 21.4982C5.24367 21.5285 6.08268 21.1757 6.74868 20.6846C7.1264 20.4061 7.31527 20.2668 7.44544 20.2508C7.5756 20.2348 7.83177 20.3403 8.34401 20.5513C8.8044 20.7409 9.33896 20.8579 9.8294 20.8905C11.2536 20.9852 12.7435 20.9854 14.1706 20.8905Z"/></svg>
+      Open sidebar <kbd data-command="toggle-sidebar" hidden></kbd>
+    </button>
+    <button class="row" id="inspect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.80282 4.62973L15.8364 6.99069C19.3164 8.35243 21.0564 9.03329 20.9987 10.1133C20.941 11.1934 19.1251 11.6886 15.4933 12.6791C14.412 12.974 13.8713 13.1215 13.4964 13.4963C13.1215 13.8712 12.9741 14.4119 12.6791 15.4933C11.6887 19.125 11.1934 20.9409 10.1134 20.9986C9.03335 21.0563 8.35249 19.3163 6.99075 15.8363L4.62979 9.80276C3.20411 6.15934 2.49127 4.33764 3.41448 3.41442C4.3377 2.49121 6.15941 3.20405 9.80282 4.62973Z"/></svg>
+      Inspect Mode <kbd data-command="toggle-mark-mode" hidden></kbd>
+    </button>
+    <button class="row" id="open-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3175 7.14139L20.8239 6.28479C20.4506 5.63696 20.264 5.31305 19.9464 5.18388C19.6288 5.05472 19.2696 5.15664 18.5513 5.36048L17.3311 5.70418C16.8725 5.80994 16.3913 5.74994 15.9726 5.53479L15.6357 5.34042C15.2766 5.11043 15.0004 4.77133 14.8475 4.37274L14.5136 3.37536C14.294 2.71534 14.1842 2.38533 13.9228 2.19657C13.6615 2.00781 13.3143 2.00781 12.6199 2.00781H11.5051C10.8108 2.00781 10.4636 2.00781 10.2022 2.19657C9.94085 2.38533 9.83106 2.71534 9.61149 3.37536L9.27753 4.37274C9.12465 4.77133 8.84845 5.11043 8.48937 5.34042L8.15249 5.53479C7.73374 5.74994 7.25259 5.80994 6.79398 5.70418L5.57375 5.36048C4.85541 5.15664 4.49625 5.05472 4.17867 5.18388C3.86109 5.31305 3.67445 5.63696 3.30115 6.28479L2.80757 7.14139C2.45766 7.74864 2.2827 8.05227 2.31666 8.37549C2.35061 8.69871 2.58483 8.95918 3.05326 9.48012L4.0843 10.6328C4.3363 10.9518 4.51521 11.5078 4.51521 12.0077C4.51521 12.5078 4.33636 13.0636 4.08433 13.3827L3.05326 14.5354C2.58483 15.0564 2.35062 15.3168 2.31666 15.6401C2.2827 15.9633 2.45766 16.2669 2.80757 16.8741L3.30114 17.7307C3.67443 18.3785 3.86109 18.7025 4.17867 18.8316C4.49625 18.9608 4.85542 18.8589 5.57377 18.655L6.79394 18.3113C7.25263 18.2055 7.73387 18.2656 8.15267 18.4808L8.4895 18.6752C8.84851 18.9052 9.12464 19.2442 9.2775 19.6428L9.61149 20.6403C9.83106 21.3003 9.94085 21.6303 10.2022 21.8191C10.4636 22.0078 10.8108 22.0078 11.5051 22.0078H12.6199C13.3143 22.0078 13.6615 22.0078 13.9228 21.8191C14.1842 21.6303 14.294 21.3003 14.5136 20.6403L14.8476 19.6428C15.0004 19.2442 15.2765 18.9052 15.6356 18.6752L15.9724 18.4808C16.3912 18.2656 16.8724 18.2055 17.3311 18.3113L18.5513 18.655C19.2696 18.8589 19.6288 18.9608 19.9464 18.8316C20.264 18.7025 20.4506 18.3785 20.8239 17.7307L21.3175 16.8741C21.6674 16.2669 21.8423 15.9633 21.8084 15.6401C21.7744 15.3168 21.5402 15.0564 21.0718 14.5354L20.0407 13.3827C19.7887 13.0636 19.6098 12.5078 19.6098 12.0077C19.6098 11.5078 19.7888 10.9518 20.0407 10.6328L21.0718 9.48012C21.5402 8.95918 21.7744 8.69871 21.8084 8.37549C21.8423 8.05227 21.6674 7.74864 21.3175 7.14139Z"/><path d="M15.5195 12C15.5195 13.933 13.9525 15.5 12.0195 15.5C10.0865 15.5 8.51953 13.933 8.51953 12C8.51953 10.067 10.0865 8.5 12.0195 8.5C13.9525 8.5 15.5195 10.067 15.5195 12Z"/></svg>
+      Settings
+    </button>
+  </div>
+
+  <section class="agents" aria-labelledby="agents-h">
+    <div class="agents-head">
+      <span class="rl-label" id="agents-h">AI agents</span>
+      <span class="agents-count" id="agents-count" aria-live="polite"></span>
+    </div>
+    <div class="agents-list" id="agents-list"></div>
+    <p class="agents-note" id="agents-note" hidden></p>
+  </section>
+
+  <nav class="help" aria-label="Help">
+    <a href="https://redlines.design/docs" target="_blank" rel="noopener">Help &amp; guides</a>
+    <a href="https://redlines.design/docs/changelog" target="_blank" rel="noopener">What's new</a>
+  </nav>
+  <script src="popup.js"></script>
+</body>
+</html>

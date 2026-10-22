@@ -1,0 +1,92 @@
+{
+  "manifest_version": 3,
+  "name": "Redlines — Visual Annotation Tool",
+  "version": "1.0.0",
+  "description": "See. Mark. Explain. Ship. Mark up any web page with element-pinned notes, saved locally per URL. Optional AI prompt-enhancement for Claude/GPT/OpenRouter.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "scripting",
+    "identity",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "designnote@varul.local",
+      "strict_min_version": "121.0"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "settings.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "selector.js",
+        "prefs.js",
+        "content.js"
+      ],
+      "css": [
+        "design-tokens.css",
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Alt+Shift+D"
+      },
+      "description": "Toggle the Redlines annotations sidebar"
+    },
+    "toggle-pill": {
+      "suggested_key": {
+        "default": "Alt+Shift+H"
+      },
+      "description": "Show/hide the floating dock"
+    },
+    "toggle-mark-mode": {
+      "suggested_key": {
+        "default": "Alt+Shift+M"
+      },
+      "description": "Toggle Inspect Mode (use to annotate inside an open dropdown/popup without a click closing it first)"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "fonts/*.ttf",
+        "icons/agents/*.svg"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

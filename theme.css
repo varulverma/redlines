@@ -1,0 +1,62 @@
+/* Shared base for extension pages (popup, settings, design-system). Tokens: design-tokens.css */
+@import url("design-tokens.css");
+
+@font-face { font-family: "Space Mono"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/SpaceMono-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Space Mono"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/SpaceMono-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Space Mono"; font-weight: 400; font-style: italic; font-display: swap; src: url("fonts/SpaceMono-Italic.ttf") format("truetype"); }
+@font-face { font-family: "Space Mono"; font-weight: 700; font-style: italic; font-display: swap; src: url("fonts/SpaceMono-BoldItalic.ttf") format("truetype"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 300 700; font-style: normal; font-display: swap; src: url("fonts/SpaceGrotesk-Variable.ttf") format("truetype"); }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--dn-font-ui);
+  font-size: var(--dn-text-base);
+  line-height: var(--dn-leading-base);
+  background: var(--dn-bg);
+  color: var(--dn-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--dn-accent-ring); color: var(--dn-text); }
+input, textarea { caret-color: var(--dn-accent); }
+:focus-visible { outline: 2px solid var(--dn-accent); outline-offset: 2px; }
+html { scrollbar-width: thin; scrollbar-color: var(--dn-border-strong) transparent; }
+
+/* Titles end in the wordmark's blinking cursor */
+.rl-cursor::after { content: "_"; margin-left: 2px; color: var(--dn-accent-text); animation: rl-blink 1.1s steps(1) infinite; }
+@keyframes rl-blink { 50% { opacity: 0; } }
+
+/* Reserved for the brand mark (designed separately) */
+.rl-mark-slot { position: relative; display: inline-block; flex-shrink: 0; width: 22px; height: 22px; background: url("brand/logo/burst/redlines-burst-body.svg") center / contain no-repeat; }
+/* The mark's arrow takes the accent colour (Settings → Accent colour) */
+.rl-mark-slot::after { content: ""; position: absolute; inset: 0; background: var(--dn-accent); -webkit-mask: url("brand/logo/burst/redlines-burst-cursor.svg") center / contain no-repeat; mask: url("brand/logo/burst/redlines-burst-cursor.svg") center / contain no-repeat; }
+
+.rl-label {
+  font-size: var(--dn-text-xs);
+  line-height: var(--dn-leading-xs);
+  letter-spacing: var(--dn-tracking-label);
+  text-transform: uppercase;
+  color: var(--dn-text-tertiary);
+}
+
+kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--dn-border-strong);
+  border-radius: var(--dn-radius-xs);
+  font-family: var(--dn-font-ui);
+  font-size: var(--dn-text-xs);
+  line-height: 16px;
+  color: var(--dn-text-secondary);
+  white-space: nowrap;
+}
+
+/* Settings → Motion: Reduced, regardless of the OS setting */
+:root[data-dn-motion="reduce"] *, :root[data-dn-motion="reduce"] *::before, :root[data-dn-motion="reduce"] *::after {
+  transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
+}

@@ -1,0 +1,274 @@
+/* ==========================================================================
+   Redlines — Design Tokens v2.0
+   Single source of truth for the extension (content UI, popup, settings,
+   design-system.html). Dark (ink) is the default; light (paper) applies when
+   the Appearance setting resolves to light: data-dn-theme="light" on
+   #designnote-root (in-page) or <html> (extension pages). All tokens --dn-*.
+   ========================================================================== */
+
+:root, #designnote-root {
+  color-scheme: dark;
+
+  /* ── Signal ─────────────────────────────────────────────────────────── */
+  --dn-accent: #00e5ff;            /* fills, rings, the one signal colour */
+  --dn-accent-hover: #5cf0ff;
+  --dn-accent-text: #00e5ff;       /* cyan used as text/icon colour */
+  --dn-accent-contrast: #031417;   /* ink text on cyan fills */
+  --dn-accent-ring: rgba(0, 229, 255, 0.38);
+  --dn-accent-subtle: rgba(0, 229, 255, 0.10);
+  --dn-accent-glow: 0 0 18px rgba(0, 229, 255, 0.28);
+
+  /* ── Surfaces (ink) ─────────────────────────────────────────────────── */
+  --dn-bg: #0b0b0b;
+  --dn-bg-secondary: #111111;
+  --dn-bg-tertiary: #1a1a1a;
+  --dn-surface-raised: #151515;
+  --dn-surface-overlay: rgba(11, 11, 11, 0.96);
+
+  /* ── Lines ──────────────────────────────────────────────────────────── */
+  --dn-border: #262626;
+  --dn-border-strong: #3a3a3a;
+  --dn-border-subtle: #1c1c1c;
+
+  /* ── Text ───────────────────────────────────────────────────────────── */
+  --dn-text: #eaeaea;
+  --dn-text-secondary: #a6a6a6;
+  --dn-text-tertiary: #8a8a8a;
+  --dn-text-inverse: #0b0b0b;
+
+  /* ── Action hues: colour = meaning on note actions, never decoration ──── */
+  --dn-act-done: #3ddc97;
+  --dn-act-copy: #4cc9f0;
+  --dn-act-image: #a78bfa;
+  --dn-act-edit: #ffc53d;
+  --dn-act-ai: #ff6bd6;
+  --dn-act-agent: #e8875f;
+  --dn-act-del: #ff6b6b;
+
+  /* ── Interactive ────────────────────────────────────────────────────── */
+  --dn-hover: rgba(255, 255, 255, 0.06);
+  --dn-active: rgba(255, 255, 255, 0.10);
+  --dn-focus-ring: 0 0 0 2px var(--dn-bg), 0 0 0 4px var(--dn-accent);
+
+  /* ── Depth ──────────────────────────────────────────────────────────── */
+  --dn-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --dn-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.40), 0 2px 6px rgba(0, 0, 0, 0.30);
+  --dn-shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --dn-shadow: var(--dn-shadow-lg);
+
+  /* ── Radii ──────────────────────────────────────────────────────────── */
+  --dn-radius-xs: 3px;
+  --dn-radius-sm: 6px;
+  --dn-radius-md: 8px;
+  --dn-radius-lg: 12px;
+  --dn-radius-full: 999px;
+
+  /* ── Typography ─────────────────────────────────────────────────────── */
+  --dn-font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --dn-font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --dn-font-ui: var(--dn-font-mono);   /* labels, controls, numbers, selectors */
+  --dn-font-body: var(--dn-font-sans); /* note bodies, explanatory paragraphs */
+  --dn-text-xs: 10px;   --dn-leading-xs: 14px;
+  --dn-text-sm: 11px;   --dn-leading-sm: 16px;
+  --dn-text-base: 12px; --dn-leading-base: 18px;
+  --dn-text-md: 13px;   --dn-leading-md: 20px;
+  --dn-text-lg: 15px;   --dn-leading-lg: 22px;
+  --dn-text-xl: 18px;   --dn-leading-xl: 24px;
+  --dn-text-2xl: 24px;  --dn-leading-2xl: 30px;
+  --dn-text-3xl: 40px;  --dn-leading-3xl: 44px;
+  --dn-tracking-label: 0.12em;       /* uppercase micro-labels */
+  --dn-weight-regular: 400;
+  --dn-weight-bold: 700;
+
+  /* ── Spacing (4px base) ─────────────────────────────────────────────── */
+  --dn-space-1: 4px;  --dn-space-2: 8px;  --dn-space-3: 12px; --dn-space-4: 16px;
+  --dn-space-5: 20px; --dn-space-6: 24px; --dn-space-8: 32px; --dn-space-10: 40px;
+
+  /* ── Motion ─────────────────────────────────────────────────────────── */
+  --dn-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dn-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --dn-duration-fast: 120ms;
+  --dn-duration-base: 180ms;
+  --dn-duration-slow: 320ms;
+
+  /* ── Annotation categories ─────────────────────────────────────────────
+     --dn-type-*-text is the category colour: chip dot, number chip, page pin.
+     Numbers sit on it in --dn-text-inverse, so each keeps ≥4.5:1 against it. */
+  --dn-type-bug-text: #ff6b6b;
+  --dn-type-suggestion-text: #5aa9ff;
+  --dn-type-text-text: #ffc53d;
+  --dn-type-note-text: #a6a6a6;
+  --dn-type-custom-l: 70%;
+
+  /* ── Status ─────────────────────────────────────────────────────────── */
+  --dn-success: #3ddc97;  --dn-success-ring: rgba(61, 220, 151, 0.20);
+  --dn-warning: #ffc53d;  --dn-error: #ff6b6b; --dn-error-ring: rgba(255, 107, 107, 0.22);
+  --dn-info: var(--dn-accent);
+
+  /* ── Z-Index ────────────────────────────────────────────────────────── */
+  --dn-z-pill: 2147483000;
+  --dn-z-sidebar: 2147483001;
+  --dn-z-popup: 2147483002;
+  --dn-z-toast: 2147483003;
+  --dn-z-table: 2147483004;
+  --dn-z-mark: 2147483005;
+  --dn-z-dropdown: 2147483006;
+}
+
+:root[data-dn-theme="light"], #designnote-root[data-dn-theme="light"] {
+  color-scheme: light;
+  --dn-accent-text: #007585;       /* cyan is unreadable as text on paper */
+  --dn-accent-ring: rgba(0, 170, 190, 0.45);
+  --dn-accent-subtle: rgba(0, 200, 225, 0.12);
+  --dn-accent-glow: 0 0 14px rgba(0, 200, 225, 0.30);
+
+  --dn-bg: #fafafa;
+  --dn-bg-secondary: #f2f2f2;
+  --dn-bg-tertiary: #eaeaea;
+  --dn-surface-raised: #ffffff;
+  --dn-surface-overlay: rgba(250, 250, 250, 0.96);
+
+  --dn-border: #dedede;
+  --dn-border-strong: #c4c4c4;
+  --dn-border-subtle: #ececec;
+
+  --dn-text: #0b0b0b;
+  --dn-text-secondary: #474747;
+  --dn-text-tertiary: #636363;
+  --dn-text-inverse: #ffffff;
+
+  --dn-hover: rgba(11, 11, 11, 0.05);
+  --dn-active: rgba(11, 11, 11, 0.09);
+
+  --dn-act-done: #0e7a4f;
+  --dn-act-copy: #00739e;
+  --dn-act-image: #6a48d7;
+  --dn-act-edit: #8a5800;
+  --dn-act-ai: #b8138a;
+  --dn-act-agent: #b4532a;
+  --dn-act-del: #c5302e;
+
+  --dn-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --dn-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --dn-shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  --dn-type-bug-text: #c5302e;
+  --dn-type-suggestion-text: #1e5fc8;
+  --dn-type-text-text: #8a5800;
+  --dn-type-note-text: #545454;
+  --dn-type-custom-l: 27%;
+
+  --dn-success: #11845b;  --dn-success-ring: rgba(17, 132, 91, 0.18);
+  --dn-warning: #8a5800;  --dn-error: #c5302e; --dn-error-ring: rgba(197, 48, 46, 0.18);
+}
+
+/* ── In-page frosted glass ───────────────────────────────────────────────
+   On the host page (#designnote-root only) surfaces are tinted glass: a
+   translucent tint here plus the backdrop blur in content.css. Tint opacity
+   is the lowest that keeps body text ≥4.5:1 over a white page (dark glass)
+   and a near-black page (light glass); tertiary text and the light-mode
+   category colours are nudged to hold that. Extension pages stay opaque. */
+#designnote-root {
+  --dn-bg: rgba(12, 12, 14, 0.88);
+  --dn-bg-secondary: rgba(255, 255, 255, 0.04);
+  --dn-bg-tertiary: rgba(255, 255, 255, 0.08);
+  --dn-surface-raised: rgba(22, 22, 26, 0.92);
+  --dn-surface-overlay: rgba(12, 12, 14, 0.92);
+  --dn-border: rgba(255, 255, 255, 0.10);
+  --dn-border-strong: rgba(255, 255, 255, 0.18);
+  --dn-border-subtle: rgba(255, 255, 255, 0.06);
+  --dn-text-tertiary: #a3a3a3;
+  --dn-glass-filter: blur(24px) saturate(180%);
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.30);
+}
+#designnote-root[data-dn-theme="light"] {
+  --dn-bg: rgba(250, 250, 251, 0.88);
+  --dn-bg-secondary: rgba(0, 0, 0, 0.035);
+  --dn-bg-tertiary: rgba(0, 0, 0, 0.06);
+  --dn-surface-raised: rgba(255, 255, 255, 0.92);
+  --dn-surface-overlay: rgba(250, 250, 251, 0.92);
+  --dn-border: rgba(0, 0, 0, 0.09);
+  --dn-border-strong: rgba(0, 0, 0, 0.16);
+  --dn-border-subtle: rgba(0, 0, 0, 0.05);
+  --dn-text-tertiary: #555555;
+  --dn-accent-text: #005f6b;
+  --dn-type-bug-text: #b0221f;
+  --dn-type-suggestion-text: #1a52b0;
+  --dn-type-text-text: #7a4d00;
+  --dn-warning: #7a4d00; --dn-error: #b0221f;
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 18px 44px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Appearance preferences ──────────────────────────────────────────────
+   Settings → dn_appearance. prefs.js sets these data-dn-* attributes on
+   <html> (extension pages) or #designnote-root (in-page), and a custom
+   accent as inline --dn-accent-* overrides. Defaults set no attribute. */
+:root[data-dn-radius="sharp"], #designnote-root[data-dn-radius="sharp"] {
+  --dn-radius-xs: 0; --dn-radius-sm: 2px; --dn-radius-md: 2px; --dn-radius-lg: 3px;
+}
+:root[data-dn-radius="round"], #designnote-root[data-dn-radius="round"] {
+  --dn-radius-xs: 5px; --dn-radius-sm: 9px; --dn-radius-md: 12px; --dn-radius-lg: 18px;
+}
+:root[data-dn-text="large"], #designnote-root[data-dn-text="large"] {
+  --dn-text-xs: 11px;   --dn-leading-xs: 16px;
+  --dn-text-sm: 12px;   --dn-leading-sm: 18px;
+  --dn-text-base: 13px; --dn-leading-base: 20px;
+  --dn-text-md: 14px;   --dn-leading-md: 22px;
+  --dn-text-lg: 16px;   --dn-leading-lg: 24px;
+  --dn-text-xl: 19px;   --dn-leading-xl: 26px;
+}
+:root[data-dn-font="sans"], #designnote-root[data-dn-font="sans"] {
+  --dn-font-ui: var(--dn-font-sans);
+}
+/* Solid in-page panels: opaque surfaces, no backdrop blur */
+#designnote-root:not([data-dn-theme="light"])[data-dn-glass="solid"] {
+  --dn-bg: #0b0b0b;
+  --dn-surface-raised: #151515;
+  --dn-surface-overlay: #0b0b0b;
+  --dn-glass-filter: none;
+}
+#designnote-root[data-dn-theme="light"][data-dn-glass="solid"] {
+  --dn-bg: #fafafa;
+  --dn-surface-raised: #ffffff;
+  --dn-surface-overlay: #fafafa;
+  --dn-glass-filter: none;
+}
+/* Glass: more see-through than frosted, lighter blur, bright top edge. Body text stays ≥4.5:1 on white / near-black pages. */
+#designnote-root:not([data-dn-theme="light"])[data-dn-glass="glass"] {
+  --dn-bg: rgba(12, 12, 14, 0.62);
+  --dn-surface-raised: rgba(22, 22, 26, 0.68);
+  --dn-surface-overlay: rgba(12, 12, 14, 0.70);
+  --dn-border: rgba(255, 255, 255, 0.22);
+  --dn-glass-filter: blur(14px) saturate(160%);
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 18px 44px rgba(0, 0, 0, 0.40), 0 4px 12px rgba(0, 0, 0, 0.26);
+}
+#designnote-root[data-dn-theme="light"][data-dn-glass="glass"] {
+  --dn-bg: rgba(250, 250, 251, 0.66);
+  --dn-surface-raised: rgba(255, 255, 255, 0.72);
+  --dn-surface-overlay: rgba(250, 250, 251, 0.74);
+  --dn-border: rgba(0, 0, 0, 0.16);
+  --dn-glass-filter: blur(14px) saturate(160%);
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 18px 44px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+/* Liquid: barely tinted, bright specular edge, backdrop darkened/lifted so text stays legible. Most transparent option;
+   best over mid-tone pages (contrast on pure white/black pages is lower than the other surfaces). */
+#designnote-root:not([data-dn-theme="light"])[data-dn-glass="liquid"] {
+  --dn-bg: rgba(12, 12, 14, 0.30);
+  --dn-bg-secondary: rgba(255, 255, 255, 0.06);
+  --dn-bg-tertiary: rgba(255, 255, 255, 0.12);
+  --dn-surface-raised: rgba(22, 22, 26, 0.40);
+  --dn-surface-overlay: rgba(12, 12, 14, 0.44);
+  --dn-border: rgba(255, 255, 255, 0.34);
+  --dn-glass-filter: blur(6px) saturate(220%) brightness(0.55);
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.14), inset 0 0 26px rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.35);
+}
+#designnote-root[data-dn-theme="light"][data-dn-glass="liquid"] {
+  --dn-bg: rgba(255, 255, 255, 0.34);
+  --dn-bg-secondary: rgba(0, 0, 0, 0.05);
+  --dn-bg-tertiary: rgba(0, 0, 0, 0.09);
+  --dn-surface-raised: rgba(255, 255, 255, 0.46);
+  --dn-surface-overlay: rgba(255, 255, 255, 0.50);
+  --dn-border: rgba(255, 255, 255, 0.70);
+  --dn-glass-filter: blur(6px) saturate(220%) brightness(1.12);
+  --dn-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(255, 255, 255, 0.4), inset 0 0 26px rgba(255, 255, 255, 0.35), 0 18px 44px rgba(0, 0, 0, 0.14);
+}

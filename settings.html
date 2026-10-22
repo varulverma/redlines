@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redlines Settings</title>
+  <link rel="stylesheet" href="theme.css" />
+  <script src="prefs.js"></script>
+  <script src="theme.js"></script>
+  <style>
+    body { padding: 0 16px 64px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    .top { display: flex; align-items: center; gap: 12px; padding: 40px 0 8px; }
+    .top h1 { margin: 0; font-size: var(--dn-text-2xl); line-height: var(--dn-leading-2xl); font-weight: 700; letter-spacing: -0.03em; }
+    .top .crumb { color: var(--dn-text-tertiary); font-size: var(--dn-text-2xl); line-height: var(--dn-leading-2xl); }
+    .intro { max-width: 60ch; margin: 8px 0 32px; font-family: var(--dn-font-body); font-size: var(--dn-text-md); line-height: 1.6; color: var(--dn-text-secondary); }
+
+    section { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 28px 0; border-top: 1px solid var(--dn-border); }
+    section > header .learn { color: var(--dn-accent-text); text-underline-offset: 2px; white-space: nowrap; }
+    section > header h2 { margin: 0 0 6px; font-size: var(--dn-text-md); line-height: var(--dn-leading-md); font-weight: 700; }
+    section > header p { margin: 0; font-family: var(--dn-font-body); font-size: var(--dn-text-base); line-height: 1.55; color: var(--dn-text-secondary); }
+    @media (max-width: 640px) { section { grid-template-columns: 1fr; gap: 14px; } }
+
+    .field + .field { margin-top: 18px; }
+    .hint + .field { margin-top: 24px; }
+    label, .legend { display: block; margin: 0 0 6px; font-size: var(--dn-text-xs); letter-spacing: var(--dn-tracking-label); text-transform: uppercase; color: var(--dn-text-secondary); }
+    label .opt { letter-spacing: 0; text-transform: none; color: var(--dn-text-tertiary); }
+    .hint { margin: 6px 0 0; font-family: var(--dn-font-body); font-size: var(--dn-text-base); line-height: 1.5; color: var(--dn-text-tertiary); }
+    .hint b { color: var(--dn-text-secondary); font-weight: 600; }
+    code { font-family: var(--dn-font-ui); font-size: var(--dn-text-sm); color: var(--dn-accent-text); word-break: break-all; }
+
+    select, input[type="password"], input[type="text"] {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--dn-border);
+      border-radius: var(--dn-radius-md);
+      background: var(--dn-bg-secondary);
+      color: var(--dn-text);
+      font-family: var(--dn-font-ui);
+      font-size: var(--dn-text-base);
+      transition: border-color var(--dn-duration-fast) ease, box-shadow var(--dn-duration-fast) ease;
+    }
+    input::placeholder { color: var(--dn-text-tertiary); }
+    select:focus, input:focus { outline: none; border-color: var(--dn-accent); box-shadow: 0 0 0 3px var(--dn-accent-subtle); }
+
+    /* Appearance: segmented radio group */
+    .seg { display: inline-flex; gap: 2px; padding: 2px; margin: 0; border: 1px solid var(--dn-border); border-radius: var(--dn-radius-md); background: var(--dn-bg-secondary); }
+    .seg input { position: absolute; opacity: 0; pointer-events: none; }
+    .seg label {
+      display: inline-flex; align-items: center; gap: 8px; height: 32px; margin: 0; padding: 0 14px;
+      border-radius: var(--dn-radius-sm); cursor: pointer;
+      font-size: var(--dn-text-base); letter-spacing: 0; text-transform: none; color: var(--dn-text-secondary);
+    }
+    .seg label:hover { color: var(--dn-text); }
+    .seg input:checked + label { background: var(--dn-bg-tertiary); color: var(--dn-text); box-shadow: inset 0 0 0 1px var(--dn-accent); }
+    .seg input:focus-visible + label { outline: 2px solid var(--dn-accent); outline-offset: 2px; }
+    /* Category manager: one editable row per category */
+    .cats { display: grid; gap: 8px; margin: 0 0 8px; padding: 0; list-style: none; }
+    .cat-row, .cats li { display: flex; gap: 8px; }
+    .cat-row input, .cats li input { flex: 1; min-width: 0; }
+    .status.error { color: var(--dn-error); }
+
+    /* Share apps: toggle chips */
+    .apps { display: flex; flex-wrap: wrap; gap: 8px; }
+    .apps .app {
+      display: inline-flex; align-items: center; gap: 8px; height: 32px; margin: 0; padding: 0 12px;
+      border: 1px solid var(--dn-border); border-radius: var(--dn-radius-md); background: var(--dn-bg-secondary);
+      font-size: var(--dn-text-base); letter-spacing: 0; text-transform: none; color: var(--dn-text-secondary); cursor: pointer;
+    }
+    .apps .app:hover { color: var(--dn-text); }
+    .apps .app:has(input:checked) { color: var(--dn-text); border-color: var(--dn-accent); background: var(--dn-accent-subtle); }
+    .apps .app:has(input:focus-visible) { outline: 2px solid var(--dn-accent); outline-offset: 2px; }
+    .apps input { margin: 0; accent-color: var(--dn-accent); }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .row-actions { display: flex; align-items: center; gap: 14px; margin-top: 26px; }
+
+    /* Accent colour: preset swatches + any custom colour */
+    .legend .now { margin-left: 8px; letter-spacing: 0; text-transform: none; color: var(--dn-text); }
+    .accents { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .accents input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+    .accents .sw {
+      position: relative; display: block; width: 28px; height: 28px; margin: 0; border-radius: 50%; cursor: pointer;
+      background: var(--c); box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.35);
+      transition: transform var(--dn-duration-fast) var(--dn-ease-out), box-shadow var(--dn-duration-fast) ease;
+    }
+    .accents .sw:hover { transform: scale(1.08); }
+    .accents input:checked + .sw, .accents .sw-custom.is-active { box-shadow: 0 0 0 2px var(--dn-bg), 0 0 0 4px var(--c); }
+    .accents input:focus-visible + .sw, .accents .sw-custom:has(input:focus-visible) { outline: 2px solid var(--dn-text); outline-offset: 5px; }
+    /* Custom: a hue wheel, filled with the chosen colour once it's in use */
+    .accents .sw-custom { --c: var(--dn-border-strong); background: conic-gradient(#ff4d4d, #ffd84d, #4dff88, #4de1ff, #6b4dff, #ff4dd8, #ff4d4d); }
+    .accents .sw-custom::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--dn-bg); pointer-events: none; }
+    .accents .sw-custom.is-active::after { background: var(--c); }
+    .accents .sw-custom input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; cursor: pointer; }
+    .accents .hex { width: 104px; height: 32px; margin-left: 4px; text-transform: lowercase; }
+    .hint.warn { color: var(--dn-warning); }
+
+    /* Live preview: a miniature of the in-page UI drawn from the same tokens */
+    .preview { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 26px; padding: 12px; border: 1px solid var(--dn-border); border-radius: var(--dn-radius-lg); background: var(--dn-bg-secondary); }
+    @media (max-width: 640px) { .preview { grid-template-columns: 1fr; } }
+    .pv-page {
+      position: relative; display: grid; place-items: center; min-height: 132px; border-radius: var(--dn-radius-md);
+      background: radial-gradient(var(--dn-border) 1px, transparent 1px) 0 0 / 12px 12px, var(--dn-bg);
+    }
+    .pv-target {
+      position: relative; padding: 9px 16px; border-radius: var(--dn-radius-sm); background: var(--dn-bg-tertiary);
+      font-family: var(--dn-font-body); font-size: var(--dn-text-md); color: var(--dn-text);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--dn-accent) 8%, transparent);
+    }
+    .pv-target::before {
+      content: ""; position: absolute; inset: -5px; --b: var(--dn-accent);
+      background:
+        linear-gradient(var(--b) 0 0) top left / 10px 2px, linear-gradient(var(--b) 0 0) top left / 2px 10px,
+        linear-gradient(var(--b) 0 0) top right / 10px 2px, linear-gradient(var(--b) 0 0) top right / 2px 10px,
+        linear-gradient(var(--b) 0 0) bottom left / 10px 2px, linear-gradient(var(--b) 0 0) bottom left / 2px 10px,
+        linear-gradient(var(--b) 0 0) bottom right / 10px 2px, linear-gradient(var(--b) 0 0) bottom right / 2px 10px;
+      background-repeat: no-repeat; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--dn-accent) 55%, transparent));
+    }
+    .pv-label { position: absolute; top: -32px; left: -5px; padding: 1px 7px; border-radius: var(--dn-radius-xs); background: var(--dn-accent); color: var(--dn-accent-contrast); font-size: var(--dn-text-xs); line-height: var(--dn-leading-xs); font-weight: 700; white-space: nowrap; }
+    .pv-pin {
+      position: absolute; top: -14px; right: -22px; display: grid; place-items: center; min-width: 22px; height: 20px; padding: 0 5px;
+      border: 2px solid var(--dn-bg); border-radius: 6px 6px 6px 0; background: var(--dn-type-bug-text); color: var(--dn-text-inverse);
+      font: 700 10px/1 var(--dn-font-ui);
+    }
+    :root[data-dn-pins="hide"] .pv-pin { display: none; }
+    :root:not([data-dn-notes="category"]) :is(.pv-num, .pv-pin) { background: var(--dn-accent); color: var(--dn-accent-contrast); }
+    .pv-panel { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid var(--dn-border); border-radius: var(--dn-radius-md); background: var(--dn-surface-raised); }
+    .pv-row { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px 8px; border: 1px solid transparent; border-radius: var(--dn-radius-sm); font-size: var(--dn-text-sm); line-height: var(--dn-leading-sm); }
+    .pv-row.on { border-color: var(--dn-accent); background: var(--dn-accent-subtle); }
+    .pv-num { flex-shrink: 0; display: grid; place-items: center; width: 18px; height: 18px; border-radius: var(--dn-radius-xs); background: var(--t); color: var(--dn-text-inverse); font-size: 10px; font-weight: 700; }
+    .pv-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--dn-font-body); color: var(--dn-text-secondary); }
+    .pv-row.on .pv-text { color: var(--dn-text); }
+    .pv-actions { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 4px; }
+    .pv-btn { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: var(--dn-radius-sm); background: var(--dn-accent); color: var(--dn-accent-contrast); font-size: var(--dn-text-sm); font-weight: 700; }
+    .pv-link { font-size: var(--dn-text-sm); color: var(--dn-accent-text); }
+    .pv-link::after { content: "_"; animation: rl-blink 1.1s steps(1) infinite; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--dn-border-strong); }
+    .swatch.dark { background: #0b0b0b; }
+    .swatch.light { background: #fafafa; }
+    .swatch.system { background: linear-gradient(135deg, #0b0b0b 50%, #fafafa 50%); }
+
+    button {
+      height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--dn-accent);
+      border-radius: var(--dn-radius-md);
+      background: var(--dn-accent);
+      color: var(--dn-accent-contrast);
+      font-family: var(--dn-font-ui);
+      font-size: var(--dn-text-base);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background var(--dn-duration-fast) ease, box-shadow var(--dn-duration-fast) ease;
+    }
+    button:hover { background: var(--dn-accent-hover); box-shadow: var(--dn-accent-glow); }
+    button:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
+    button.secondary { background: transparent; border-color: var(--dn-border-strong); color: var(--dn-text); }
+    button.secondary:hover { background: var(--dn-hover); box-shadow: none; }
+    .save-row { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
+    .status { font-size: var(--dn-text-sm); letter-spacing: 0.06em; text-transform: uppercase; color: var(--dn-success); min-height: 16px; }
+
+    .drive-status {
+      display: inline-flex; align-items: center; gap: 8px; margin: 18px 0 14px; padding: 0 12px; height: 32px;
+      border: 1px solid var(--dn-border); border-radius: var(--dn-radius-sm); background: var(--dn-bg-secondary);
+      font-size: var(--dn-text-base); color: var(--dn-text);
+    }
+    .drive-status::before { content: ""; flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--dn-text-tertiary); }
+    .drive-status.connected::before { background: var(--dn-success); box-shadow: 0 0 0 3px var(--dn-success-ring); }
+    .drive-status.error { color: var(--dn-error); }
+    .drive-status.error::before { background: var(--dn-error); box-shadow: 0 0 0 3px var(--dn-error-ring); }
+    .drive-status.checking::before { background: var(--dn-accent); animation: rl-pulse 1.1s ease-in-out infinite; }
+    @keyframes rl-pulse { 50% { opacity: 0.3; } }
+    .drive-actions { display: flex; gap: 10px; }
+
+    .note {
+      display: flex; gap: 10px; margin-top: 22px; padding: 12px 14px;
+      border: 1px solid var(--dn-border); border-radius: var(--dn-radius-md); background: var(--dn-bg-secondary);
+      font-family: var(--dn-font-body); font-size: var(--dn-text-base); line-height: 1.55; color: var(--dn-text-secondary);
+    }
+    .note svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--dn-warning); }
+    .note b { color: var(--dn-text); }
+
+    .privacy { margin: 0; padding: 0; list-style: none; font-family: var(--dn-font-body); font-size: var(--dn-text-md); line-height: 1.6; color: var(--dn-text-secondary); }
+    .privacy li { padding: 10px 0; border-bottom: 1px solid var(--dn-border-subtle); }
+    .privacy li:first-child { padding-top: 0; }
+    .privacy b { display: block; margin-bottom: 2px; font-family: var(--dn-font-ui); font-size: var(--dn-text-base); color: var(--dn-text); }
+
+    /* Connect to AI agents */
+    .cmd { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; }
+    .cmd pre {
+      flex: 1; min-width: 0; margin: 0; padding: 10px 12px; border: 1px solid var(--dn-border); border-radius: var(--dn-radius-sm);
+      background: var(--dn-bg-secondary); font-family: var(--dn-font-ui); font-size: var(--dn-text-sm); line-height: 1.5;
+      color: var(--dn-text); white-space: pre-wrap; word-break: break-all;
+    }
+    .bridge-log { margin: 8px 0 0; padding: 0; list-style: none; font-family: var(--dn-font-body); font-size: var(--dn-text-base); color: var(--dn-text-secondary); }
+    .bridge-log li { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--dn-border-subtle); }
+    .bridge-log time { flex-shrink: 0; color: var(--dn-text-tertiary); font-variant-numeric: tabular-nums; }
+    #bridge-details[hidden] { display: none; }
+    /* Agent logos are single-colour SVGs, drawn as masks so they follow the theme */
+    .agent-ico {
+      flex-shrink: 0; width: 16px; height: 16px; background: var(--agent-color, currentColor);
+      -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
+    }
+    .apps .app.agent { position: relative; }
+    .apps .app.agent input { position: absolute; opacity: 0; pointer-events: none; }
+    .apps .app.agent.live::after {
+      content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dn-success); box-shadow: 0 0 0 3px var(--dn-success-ring);
+    }
+    .bridge-agents { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 18px; font-family: var(--dn-font-body); font-size: var(--dn-text-base); color: var(--dn-text); }
+    .bridge-agents span { display: inline-flex; align-items: center; gap: 6px; }
+    .bridge-agents[hidden] { display: none; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="rl-mark-slot" aria-hidden="true"></span>
+    <h1 class="rl-cursor">Redlines</h1>
+    <span class="crumb">/ settings</span>
+  </div>
+  <p class="intro">
+    Marking up pages works fully offline. An API key is only needed for the Enhance button,
+    which turns a raw annotation into a structured prompt for a coding agent.
+  </p>
+
+  <section aria-labelledby="h-appearance">
+    <header>
+      <h2 id="h-appearance">Appearance</h2>
+      <p>Make Redlines yours. Changes apply at once to the in-page panels, the toolbar popup and this page, in every open tab. <a class="learn" href="https://redlines.design/docs/appearance" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="preview" aria-hidden="true">
+        <div class="pv-page">
+          <div class="pv-target">Get started<span class="pv-label">button.cta</span><span class="pv-pin">2</span></div>
+        </div>
+        <div class="pv-panel">
+          <div class="pv-row"><span class="pv-num" style="--t: var(--dn-type-suggestion-text)">1</span><span class="pv-text">Tighten the hero spacing</span></div>
+          <div class="pv-row on"><span class="pv-num" style="--t: var(--dn-type-bug-text)">2</span><span class="pv-text">CTA label clips at 320px</span></div>
+          <div class="pv-actions"><span class="pv-btn">Save</span><span class="pv-link">Enhance</span></div>
+        </div>
+      </div>
+
+      <div class="legend" id="theme-legend">Theme</div>
+      <div class="seg" role="radiogroup" aria-labelledby="theme-legend">
+        <input type="radio" name="theme" id="theme-dark" value="dark" /><label for="theme-dark"><span class="swatch dark"></span>Dark</label>
+        <input type="radio" name="theme" id="theme-light" value="light" /><label for="theme-light"><span class="swatch light"></span>Light</label>
+        <input type="radio" name="theme" id="theme-system" value="system" /><label for="theme-system"><span class="swatch system"></span>System</label>
+      </div>
+      <p class="hint">System follows your operating system's light or dark setting.</p>
+
+      <div class="field">
+        <div class="legend" id="accent-legend">Accent colour<span class="now" id="accent-name"></span></div>
+        <div class="accents" id="accents" role="radiogroup" aria-labelledby="accent-legend">
+          <label class="sw sw-custom" id="accent-custom" title="Pick any colour"><input type="color" id="accent-picker" aria-label="Pick a custom accent colour" /></label>
+          <input type="text" class="hex" id="accent-hex" aria-label="Accent colour hex code" maxlength="7" spellcheck="false" autocomplete="off" placeholder="#00e5ff" />
+        </div>
+        <p class="hint" id="accent-hint" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="radius-legend">Corners</div>
+        <div class="seg" role="radiogroup" aria-labelledby="radius-legend" data-pref="radius">
+          <input type="radio" name="pref-radius" id="radius-sharp" value="sharp" /><label for="radius-sharp">Sharp</label>
+          <input type="radio" name="pref-radius" id="radius-rounded" value="rounded" /><label for="radius-rounded">Rounded</label>
+          <input type="radio" name="pref-radius" id="radius-round" value="round" /><label for="radius-round">Soft</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="text-legend">Text size</div>
+        <div class="seg" role="radiogroup" aria-labelledby="text-legend" data-pref="text">
+          <input type="radio" name="pref-text" id="text-default" value="default" /><label for="text-default">Default</label>
+          <input type="radio" name="pref-text" id="text-large" value="large" /><label for="text-large">Large</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="font-legend">Interface font</div>
+        <div class="seg" role="radiogroup" aria-labelledby="font-legend" data-pref="font">
+          <input type="radio" name="pref-font" id="font-mono" value="mono" /><label for="font-mono">Mono</label>
+          <input type="radio" name="pref-font" id="font-sans" value="sans" /><label for="font-sans" style="font-family: var(--dn-font-sans)">Sans</label>
+        </div>
+        <p class="hint">Labels, buttons and numbers. Note text always uses the sans face.</p>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="glass-legend">In-page panels</div>
+        <div class="seg" role="radiogroup" aria-labelledby="glass-legend" data-pref="glass">
+          <input type="radio" name="pref-glass" id="glass-frosted" value="frosted" /><label for="glass-frosted">Frosted glass</label>
+          <input type="radio" name="pref-glass" id="glass-glass" value="glass" /><label for="glass-glass">Glass</label>
+          <input type="radio" name="pref-glass" id="glass-liquid" value="liquid" /><label for="glass-liquid">Liquid glass</label>
+          <input type="radio" name="pref-glass" id="glass-solid" value="solid" /><label for="glass-solid">Solid</label>
+        </div>
+        <p class="hint">Glass and Liquid glass let more of the page show through (Liquid is the most transparent and least legible on pure white or pure black pages). Solid panels hide the page behind them completely and are lighter on slower machines.</p>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="motion-legend">Motion</div>
+        <div class="seg" role="radiogroup" aria-labelledby="motion-legend" data-pref="motion">
+          <input type="radio" name="pref-motion" id="motion-system" value="system" /><label for="motion-system">Follow system</label>
+          <input type="radio" name="pref-motion" id="motion-reduce" value="reduce" /><label for="motion-reduce">Reduced</label>
+        </div>
+        <p class="hint">Reduced turns off animations, the trailing Inspect ring and smooth scrolling.</p>
+      </div>
+
+      <div class="row-actions">
+        <button type="button" class="secondary" id="appearance-reset">Reset appearance</button>
+        <div class="status" id="appearance-status" role="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-workspace">
+    <header>
+      <h2 id="h-workspace">Workspace</h2>
+      <p>How the notes sidebar and page markers behave. <a class="learn" href="https://redlines.design/docs/workspace" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="legend" id="sidebar-legend">Sidebar opens as</div>
+      <div class="seg" role="radiogroup" aria-labelledby="sidebar-legend">
+        <input type="radio" name="sidebar" id="sidebar-rail" value="rail" /><label for="sidebar-rail">Compact rail</label>
+        <input type="radio" name="sidebar" id="sidebar-full" value="full" /><label for="sidebar-full">Full panel</label>
+      </div>
+      <p class="hint">The rail is a slim column of numbered notes that expands on hover. You can still switch from the sidebar itself.</p>
+
+      <div class="field">
+        <div class="legend" id="pins-legend">Page pins</div>
+        <div class="seg" role="radiogroup" aria-labelledby="pins-legend" data-pref="pins">
+          <input type="radio" name="pref-pins" id="pins-show" value="show" /><label for="pins-show">Show</label>
+          <input type="radio" name="pref-pins" id="pins-hide" value="hide" /><label for="pins-hide">Hide</label>
+        </div>
+        <p class="hint">Numbered markers on annotated elements while the sidebar is open.</p>
+      </div>
+
+      <div class="field">
+        <div class="legend" id="notes-legend">Note colours</div>
+        <div class="seg" role="radiogroup" aria-labelledby="notes-legend" data-pref="notes">
+          <input type="radio" name="pref-notes" id="notes-accent" value="accent" /><label for="notes-accent">Accent</label>
+          <input type="radio" name="pref-notes" id="notes-category" value="category" /><label for="notes-category">By category</label>
+        </div>
+        <p class="hint">The numbers in the sidebar and on page pins. By category gives each category its own colour.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-annotations">
+    <header>
+      <h2 id="h-annotations">Annotations</h2>
+      <p>What the note form shows after you select an element. <a class="learn" href="https://redlines.design/docs/notes-and-categories" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="legend" id="categories-legend">Categories</div>
+      <div class="seg" role="radiogroup" aria-labelledby="categories-legend">
+        <input type="radio" name="categories" id="categories-hide" value="hide" /><label for="categories-hide">Hide</label>
+        <input type="radio" name="categories" id="categories-show" value="show" /><label for="categories-show">Show</label>
+      </div>
+      <p class="hint">Show or hide the category picker in the Edit dialog. The new-note callout always shows its category chip: new notes use your first category below unless you open the chip's arrow and pick another. Applies to the next form you open.</p>
+
+      <div class="field">
+        <div class="legend" id="category-legend">Your categories</div>
+        <ul class="cats" id="category-list" aria-labelledby="category-legend"></ul>
+        <form class="cat-row" id="category-add">
+          <input type="text" id="category-new" aria-label="New category name" placeholder="New category (e.g. Copy, Layout)" autocomplete="off" />
+          <button type="submit">Add</button>
+        </form>
+        <p class="hint">Rename a category by editing its name; notes already in it move with it. Deleting one keeps its notes, still labelled with the old name.</p>
+        <div class="status" id="category-status" role="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="share-apps" aria-labelledby="h-share">
+    <header>
+      <h2 id="h-share">Share to apps</h2>
+      <p>Apps listed in the table view's <b>Copy as</b> menu. <a class="learn" href="https://redlines.design/docs/share-to-apps" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="legend" id="share-legend">Apps</div>
+      <div class="apps" role="group" aria-labelledby="share-legend">
+        <label class="app"><input type="checkbox" name="share-app" value="notion" />Notion</label>
+        <label class="app"><input type="checkbox" name="share-app" value="linear" />Linear</label>
+        <label class="app"><input type="checkbox" name="share-app" value="jira" />Jira</label>
+        <label class="app"><input type="checkbox" name="share-app" value="github" />GitHub issue</label>
+        <label class="app"><input type="checkbox" name="share-app" value="gitlab" />GitLab issue</label>
+        <label class="app"><input type="checkbox" name="share-app" value="slack" />Slack</label>
+        <label class="app"><input type="checkbox" name="share-app" value="discord" />Discord</label>
+        <label class="app"><input type="checkbox" name="share-app" value="trello" />Trello</label>
+        <label class="app"><input type="checkbox" name="share-app" value="email" />Email</label>
+      </div>
+      <p class="hint">Each copies your notes formatted for that app, ready to paste. Nothing is sent and no account is needed.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-ai">
+    <header>
+      <h2 id="h-ai">AI Enhance</h2>
+      <p>Your own key, sent only to the provider you choose, only when you click Enhance. <a class="learn" href="https://redlines.design/docs/enhance" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="field">
+        <label for="provider">Provider</label>
+        <select id="provider">
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openai">OpenAI (GPT)</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="apiKey">API key</label>
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        <p class="hint">To remove the key, clear this field and save.</p>
+      </div>
+      <div class="field">
+        <label for="model">Model <span class="opt">(optional)</span></label>
+        <input type="text" id="model" autocomplete="off" spellcheck="false" />
+        <p class="hint">Leave empty for the default shown. Change it if your provider retires that model.</p>
+      </div>
+      <div class="save-row">
+        <button id="save">Save settings</button>
+        <div class="status" id="status" role="status"></div>
+      </div>
+      <p class="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16V12"/><path d="M12.125 8.25H12M12.25 8.25C12.25 8.11193 12.1381 8 12 8C11.8619 8 11.75 8.11193 11.75 8.25C11.75 8.38807 11.8619 8.5 12 8.5C12.1381 8.5 12.25 8.38807 12.25 8.25Z"/></svg>
+        <span>Your key is stored only in this browser's local extension storage. It is never sent
+        anywhere except directly to your chosen provider's API when you click Enhance. It is
+        <b>not encrypted</b>: anyone who can use this browser profile could read it, so prefer a key
+        with a spending limit.</span>
+      </p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-drive">
+    <header>
+      <h2 id="h-drive">Google Drive</h2>
+      <p>Send Excel design-audit spreadsheets straight to your Drive. <a class="learn" href="https://redlines.design/docs/google-drive" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="field">
+        <label for="driveClientId">OAuth client ID</label>
+        <input type="text" id="driveClientId" placeholder="xxxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false" />
+        <p class="hint">
+          Create a <b>Web application</b> OAuth client in Google Cloud Console, enable the
+          Drive API, and add this exact <b>Authorized redirect URI</b>:<br />
+          <code id="redirectUri">…</code>
+        </p>
+      </div>
+      <div class="drive-status checking" id="drive-status" role="status">Checking connection…</div>
+      <div class="drive-actions">
+        <button id="drive-connect">Check / connect</button>
+        <button id="drive-disconnect" class="secondary" hidden>Disconnect</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-agents">
+    <header>
+      <h2 id="h-agents">Connect to AI agents</h2>
+      <p>Let AI tools on this computer (Claude Code, Claude Desktop, Cursor, VS Code, Codex…) read your notes and fix them, through MCP. <a class="learn" href="https://redlines.design/docs/ai-agents" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <div>
+      <div class="legend" id="bridge-legend">AI agent access</div>
+      <div class="seg" role="radiogroup" aria-labelledby="bridge-legend">
+        <input type="radio" name="bridge" id="bridge-off" value="off" /><label for="bridge-off">Off</label>
+        <input type="radio" name="bridge" id="bridge-on" value="on" /><label for="bridge-on">On</label>
+      </div>
+      <div id="bridge-details" hidden>
+        <div class="drive-status" id="bridge-status" role="status">Waiting for an AI tool…</div>
+        <div class="bridge-agents" id="bridge-agents" hidden></div>
+
+        <div class="field">
+          <label for="bridge-path">Redlines folder <span class="opt">(to fill in the commands)</span></label>
+          <input type="text" id="bridge-path" placeholder="C:\path\to\designnote-extension" autocomplete="off" spellcheck="false" />
+          <p class="hint">The folder you loaded into Chrome. It contains <code>mcp/redlines-mcp.js</code>. Needs <b>Node.js 18+</b>.</p>
+        </div>
+        <div class="field">
+          <div class="legend" id="agent-pick-legend">Add an agent</div>
+          <div class="apps" id="agent-pick" role="radiogroup" aria-labelledby="agent-pick-legend"></div>
+          <p class="hint" id="agent-where"></p>
+          <div class="cmd"><pre id="bridge-cmd"></pre><button type="button" class="secondary" data-copy="bridge-cmd">Copy</button></div>
+          <p class="hint">Add as many agents as you like; each one connected right now shows a green dot, and appears under <b>Send to</b> when you write a note. The setup includes your private pairing code. Only an AI tool started with it can connect. <button type="button" class="secondary" id="bridge-new-code">New pairing code</button> disconnects every tool using the old one.</p>
+        </div>
+
+        <div class="field">
+          <label for="bridge-sites">Shared sites</label>
+          <input type="text" id="bridge-sites" autocomplete="off" spellcheck="false" />
+          <p class="hint">Only notes on these sites are shared, separated by spaces. Use <code>*.example.com</code>, <code>staging.*</code>, or <code>file</code> for local files. Notes on every other site stay private.</p>
+        </div>
+        <div class="field">
+          <div class="legend" id="bridge-perm-legend">Agents may also</div>
+          <div class="apps" role="group" aria-labelledby="bridge-perm-legend">
+            <label class="app"><input type="checkbox" id="bridge-screenshots" />See screenshots</label>
+            <label class="app"><input type="checkbox" id="bridge-write" />Resolve, reply and add notes</label>
+          </div>
+          <p class="hint">Without the second option, agents can only read. Anything an agent writes is labelled <b>AI</b> in your sidebar.</p>
+        </div>
+        <div class="field">
+          <div class="legend">Recent agent activity <button type="button" class="secondary" id="bridge-log-clear">Clear</button></div>
+          <ol class="bridge-log" id="bridge-log"></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-privacy">
+    <header>
+      <h2 id="h-privacy">Your data</h2>
+      <p>What stays in your browser, and what leaves it. <a class="learn" href="https://redlines.design/docs/privacy" target="_blank" rel="noopener">Learn more →</a></p>
+    </header>
+    <ul class="privacy">
+      <li><b>Stays local</b>Notes, screenshots, categories and settings are saved in this browser's
+        extension storage only. Marking, saving, the sidebar, the table and every file export work offline.</li>
+      <li><b>Enhance (only when you click it)</b>Sends the note text, its category, the element's
+        selector and the page address <em>without</em> its query string or #fragment to the provider
+        above. Screenshots are not sent. You're asked once per provider before the first send.</li>
+      <li><b>Send to Google Drive (only when you click it)</b>Uploads the Excel export, including
+        screenshots and page addresses, to your Drive. You're asked once first. Opening this page
+        doesn't contact Google; Disconnect revokes access and forgets the account.</li>
+      <li><b>AI agents (only while you turn it on)</b>An AI tool on this computer that you started with
+        your pairing code can read notes from your shared sites: text, element details, page addresses
+        and, if allowed, screenshots. Redlines only talks to <code>127.0.0.1</code>, but the AI tool may send
+        what it reads to its own provider, as with anything else you show it. Every access is listed above.</li>
+      <li><b>While a Redlines panel is open on a page</b>That page's own scripts can technically
+        see what the panel shows (it is part of the page). Avoid opening it on sites you don't trust.</li>
+      <li><b>Removing data</b>Delete notes from the sidebar or table. Removing the extension
+        deletes everything it stored.</li>
+    </ul>
+  </section>
+</div>
+<script src="settings.js"></script>
+</body>
+</html>
