@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="icons/icon128.png" width="96" alt="Redlines logo">
+  <a href="https://getredlines.netlify.app"><img src="docs/assets/redlines-logo-animated.svg" width="140" height="140" alt="Redlines logo"></a>
 </p>
 
 <h1 align="center">Redlines</h1>
@@ -10,10 +10,18 @@
 </p>
 
 <p align="center">
-  <a href="docs/GUIDE.md">Guide</a> ·
+  <a href="https://getredlines.netlify.app"><b>Website</b></a> ·
+  <a href="https://getredlines.netlify.app/docs"><b>Docs</b></a> ·
   <a href="../../releases">Download</a> ·
+  <a href="docs/GUIDE.md">Guide in this repo</a> ·
   <a href="../../issues">Report a problem</a>
 </p>
+
+<p align="center">
+  <a href="https://getredlines.netlify.app"><img src="docs/assets/redlines-website.webp" width="880" alt="The Redlines website: the headline 'Mark up any live website' framed by the extension's own inspect brackets, with a pinned suggestion note and install buttons"></a>
+</p>
+
+<p align="center"><sub>Watch the 60-second film and try Inspect mode on <a href="https://getredlines.netlify.app">getredlines.netlify.app</a>. Full setup, every feature and AI agent guides are in the <a href="https://getredlines.netlify.app/docs">docs</a>.</sub></p>
 
 ---
 
@@ -43,7 +51,7 @@ Chrome Web Store and Edge Add-ons listings are coming soon. Until then:
 1. Click the green **Code** button on this page → **Download ZIP**, and unzip it.
 2. Open `chrome://extensions` (or `edge://extensions`) and switch on **Developer mode**.
 3. Click **Load unpacked** and pick the unzipped folder (the one with `manifest.json`).
-4. Open any page and press `Alt+Shift+M`. For local `file://` pages, enable "Allow access to file URLs" on the extension's details page.
+4. Open any page and press `Alt+Shift+M`. Step-by-step with screenshots: [Install guide](https://getredlines.netlify.app/docs/install/). For local `file://` pages, enable "Allow access to file URLs" on the extension's details page.
 
 ## Connect an AI agent
 
@@ -53,7 +61,20 @@ Needs Node.js 18+ and an MCP-capable AI tool on the same computer.
 2. Pick your AI tool and copy the ready-made command or JSON into it.
 3. The status turns **Connected**. Ask your agent: *"fix all open Redlines bugs on localhost:3000"*.
 
-The bridge listens on `127.0.0.1` only, accepts only the extension, needs your pairing code, shows only the sites you share, and is read-only unless you allow changes. Details: [docs/GUIDE.md](docs/GUIDE.md#connect-to-ai-agents-mcp).
+The bridge listens on `127.0.0.1` only, accepts only the extension, needs your pairing code, shows only the sites you share, and is read-only unless you allow changes. Setup for every AI tool: [AI agents](https://getredlines.netlify.app/docs/ai-agents/) · [Send a note to an agent](https://getredlines.netlify.app/docs/send-to-agent/) · [Several agents at once](https://getredlines.netlify.app/docs/guide-multiple-agents/) · [MCP tools](https://getredlines.netlify.app/docs/mcp-tools/).
+
+## Docs
+
+Everything is documented on the website: **[getredlines.netlify.app/docs](https://getredlines.netlify.app/docs/)**
+
+| Start here | Features | Guides |
+|---|---|---|
+| [Quickstart](https://getredlines.netlify.app/docs/quickstart/) | [Inspect mode](https://getredlines.netlify.app/docs/inspect-mode/) | [Fix notes with Claude Code](https://getredlines.netlify.app/docs/guide-claude-code-fix/) |
+| [Install](https://getredlines.netlify.app/docs/install/) | [Notes and categories](https://getredlines.netlify.app/docs/notes-and-categories/) | [Developer handoff](https://getredlines.netlify.app/docs/guide-developer-handoff/) |
+| [Keyboard shortcuts](https://getredlines.netlify.app/docs/keyboard-shortcuts/) | [Sidebar and status](https://getredlines.netlify.app/docs/sidebar-and-status/) | [Client audit](https://getredlines.netlify.app/docs/guide-client-audit/) |
+| [Troubleshooting](https://getredlines.netlify.app/docs/troubleshooting/) | [Table view](https://getredlines.netlify.app/docs/table-view/) | [QA bug bash](https://getredlines.netlify.app/docs/guide-qa-bug-bash/) |
+| [Browser support](https://getredlines.netlify.app/docs/browser-support/) | [Export and share](https://getredlines.netlify.app/docs/export-and-share/) | [Several agents at once](https://getredlines.netlify.app/docs/guide-multiple-agents/) |
+| [Changelog](https://getredlines.netlify.app/docs/changelog/) | [AI agents](https://getredlines.netlify.app/docs/ai-agents/) | [Back up or move your notes](https://getredlines.netlify.app/docs/guide-backup-move/) |
 
 ## Keyboard shortcuts
 
@@ -66,7 +87,7 @@ The bridge listens on `127.0.0.1` only, accepts only the extension, needs your p
 
 ## Privacy
 
-Notes and screenshots stay in your browser's extension storage. Marking, saving and viewing work offline. Nothing leaves your machine except when you explicitly use Enhance (your AI provider, your key), Send to Google Drive (your Drive), or the local agent bridge. No analytics, no telemetry, no server. See [PRIVACY_AND_PERMISSIONS.md](docs/PRIVACY_AND_PERMISSIONS.md).
+Notes and screenshots stay in your browser's extension storage. Marking, saving and viewing work offline. Nothing leaves your machine except when you explicitly use Enhance (your AI provider, your key), Send to Google Drive (your Drive), or the local agent bridge. No analytics, no telemetry, no server. Full details: [Privacy](https://getredlines.netlify.app/docs/privacy/) on the website, or [PRIVACY_AND_PERMISSIONS.md](docs/PRIVACY_AND_PERMISSIONS.md) in this repo.
 
 ## For developers
 
